@@ -1,0 +1,93 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:banner",
+ "creation": "2026-02-25 15:15:37.253851",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "banner",
+  "title_en",
+  "title_ar",
+  "image_url",
+  "column_break_zv6k",
+  "link_type",
+  "link_id",
+  "display_order",
+  "valid_until"
+ ],
+ "fields": [
+  {
+   "fieldname": "banner",
+   "fieldtype": "Data",
+   "label": "Banner",
+   "unique": 1
+  },
+  {
+   "fieldname": "title_en",
+   "fieldtype": "Data",
+   "label": "Title "
+  },
+  {
+   "fieldname": "title_ar",
+   "fieldtype": "Data",
+   "label": "Title ( Ar )"
+  },
+  {
+   "fieldname": "image_url",
+   "fieldtype": "Attach Image",
+   "label": "Image url"
+  },
+  {
+   "fieldname": "column_break_zv6k",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "link_type",
+   "fieldtype": "Data",
+   "label": "Link Type"
+  },
+  {
+   "fieldname": "link_id",
+   "fieldtype": "Data",
+   "label": "Link ID"
+  },
+  {
+   "fieldname": "display_order",
+   "fieldtype": "Data",
+   "label": "Display Order"
+  },
+  {
+   "fieldname": "valid_until",
+   "fieldtype": "Date",
+   "label": "Valid Until"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-02-25 15:18:16.200377",
+ "modified_by": "Administrator",
+ "module": "Run of the Mill General",
+ "name": "SB Banner",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

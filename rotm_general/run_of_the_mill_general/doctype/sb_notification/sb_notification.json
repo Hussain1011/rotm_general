@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:notification",
+ "creation": "2026-02-25 15:18:58.915382",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "notification",
+  "title_en",
+  "title_ar",
+  "body_en",
+  "column_break_1gtf",
+  "body_ar",
+  "type",
+  "is_read",
+  "creation1"
+ ],
+ "fields": [
+  {
+   "fieldname": "notification",
+   "fieldtype": "Data",
+   "label": "Notification",
+   "unique": 1
+  },
+  {
+   "fieldname": "title_en",
+   "fieldtype": "Data",
+   "label": "Title "
+  },
+  {
+   "fieldname": "title_ar",
+   "fieldtype": "Data",
+   "label": "Title ( Ar )"
+  },
+  {
+   "fieldname": "body_en",
+   "fieldtype": "Data",
+   "label": "Body"
+  },
+  {
+   "fieldname": "body_ar",
+   "fieldtype": "Text",
+   "label": "Body ( Ar )"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Text",
+   "label": "Type"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_read",
+   "fieldtype": "Check",
+   "label": "Is Read"
+  },
+  {
+   "fieldname": "creation1",
+   "fieldtype": "Date",
+   "label": "Creation"
+  },
+  {
+   "fieldname": "column_break_1gtf",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-02-25 15:21:27.054203",
+ "modified_by": "Administrator",
+ "module": "Run of the Mill General",
+ "name": "SB Notification",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
