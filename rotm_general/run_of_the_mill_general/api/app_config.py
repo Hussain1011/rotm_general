@@ -1,3 +1,4 @@
+import frappe
 from rotm_general.run_of_the_mill_general.utils.responses import ok
 
 @frappe.whitelist(allow_guest=True)
