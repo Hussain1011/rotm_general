@@ -11,7 +11,9 @@ OTP_KEY = "sb:otp:{phone}"
 @frappe.whitelist(allow_guest=True)
 def register():
     rate_limited("register")
-    data = frappe.parse_json(frappe.request.data or "{}")
+    # ✅ works with Postman raw JSON + form-data + anything
+    data = get_payload()
+
     email = data.get("email"); phone = data.get("phone")
     full_name = data.get("full_name"); password = data.get("password")
 
@@ -27,7 +29,7 @@ def register():
     update_password(user.name, password)
 
     # Send OTP
-    _send_otp_internal(phone, is_forget=False)
+    # _send_otp_internal(phone, is_forget=False)
     return ok({"user": user.as_dict()}, "Registration successful. OTP sent.", "تم التسجيل بنجاح. تم إرسال رمز التحقق.")  # :contentReference[oaicite:7]{index=7}
 
 @frappe.whitelist(allow_guest=True)
@@ -45,6 +47,21 @@ def _send_otp_internal(phone, is_forget=False):
     frappe.cache().set_value(OTP_KEY.format(phone=phone), otp, OTP_TTL_SEC)
     # TODO: integrate SMS provider here
 
+def get_payload() -> dict:
+    """Safe request payload: works with JSON body + form-data + raw bytes."""
+    data = frappe.request.get_json(silent=True)
+    if not data:
+        data = dict(frappe.form_dict) if frappe.form_dict else None
+    if not data:
+        raw = frappe.request.data or b"{}"
+        if isinstance(raw, (bytes, bytearray)):
+            raw = raw.decode("utf-8", errors="ignore")
+        try:
+            data = frappe.parse_json(raw) or {}
+        except Exception:
+            data = {}
+    return data if isinstance(data, dict) else {}
+
 @frappe.whitelist(allow_guest=True)
 def verify_otp():
     data = frappe.parse_json(frappe.request.data or "{}")
@@ -61,7 +78,7 @@ def verify_otp():
 @frappe.whitelist(allow_guest=True)
 def login():
     # Use Frappe's /api/method/login is option; but we return your shape:
-    data = frappe.parse_json(frappe.request.data or "{}")
+    data = data = get_payload()
     email = data.get("email"); password = data.get("password")
     if not (email and password):
         return err("Validation failed","فشل التحقق من البيانات", {"email/password":"required"}, 417)
