@@ -1,4 +1,5 @@
 import frappe, re
+import json
 from frappe import _
 from frappe.utils import now_datetime, random_string
 from frappe.utils.password import update_password
@@ -8,10 +9,38 @@ from rotm_general.run_of_the_mill_general.utils.rate_limit import rate_limited
 OTP_TTL_SEC = 600  # 10 min, per spec 5–10 min
 OTP_KEY = "sb:otp:{phone}"
 
+
+def _request_payload():
+    body = getattr(frappe.request, "data", None)
+    if not body:
+        return {}
+
+    if isinstance(body, (bytes, bytearray)):
+        body = body.decode("utf-8", errors="ignore")
+
+    if isinstance(body, dict):
+        return body
+
+    if isinstance(body, str):
+        try:
+            parsed = frappe.parse_json(body)
+        except Exception:
+            try:
+                parsed = json.loads(body)
+            except Exception:
+                return {}
+        return parsed if isinstance(parsed, dict) else {}
+
+    try:
+        parsed = frappe.parse_json(body)
+    except Exception:
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
 @frappe.whitelist(allow_guest=True)
 def register():
     rate_limited("register")
-    data = frappe.parse_json(frappe.request.data or "{}")
+    data = _request_payload()
     email = data.get("email"); phone = data.get("phone")
     full_name = data.get("full_name"); password = data.get("password")
 
@@ -33,7 +62,7 @@ def register():
 @frappe.whitelist(allow_guest=True)
 def send_otp():
     rate_limited("send_otp")
-    data = frappe.parse_json(frappe.request.data or "{}")
+    data = _request_payload()
     phone = data.get("phone")
     if not phone:
         return err("Validation failed","فشل التحقق من البيانات", {"phone":"required"}, 417)
@@ -47,7 +76,7 @@ def _send_otp_internal(phone, is_forget=False):
 
 @frappe.whitelist(allow_guest=True)
 def verify_otp():
-    data = frappe.parse_json(frappe.request.data or "{}")
+    data = _request_payload()
     otp = data.get("otp")
     # phone can be carried in session or pass explicitly; keep simple:
     phone = data.get("phone")
@@ -61,7 +90,7 @@ def verify_otp():
 @frappe.whitelist(allow_guest=True)
 def login():
     # Use Frappe's /api/method/login is option; but we return your shape:
-    data = frappe.parse_json(frappe.request.data or "{}")
+    data = _request_payload()
     email = data.get("email"); password = data.get("password")
     if not (email and password):
         return err("Validation failed","فشل التحقق من البيانات", {"email/password":"required"}, 417)
@@ -71,9 +100,10 @@ def login():
         user = frappe.get_doc("User", email)
         # issue API key/secret
         api_key = user.api_key or frappe.generate_hash(length=15)
-        if not user.api_key: user.api_key = api_key; user.save(ignore_permissions=True)
-        api_secret = frappe.generate_hash(length=32)
-        frappe.db.set_value("User", user.name, "api_secret", api_secret)
+        api_secret = frappe.generate_hash(length=15)
+        user.api_key = api_key
+        user.api_secret = api_secret
+        user.save(ignore_permissions=True)
         return ok({"user": user.as_dict(), "api_key": api_key, "api_secret": api_secret},
                   "Login successful.","تم تسجيل الدخول بنجاح.")  # :contentReference[oaicite:10]{index=10}
     except Exception:
@@ -86,7 +116,7 @@ def logout():
 
 @frappe.whitelist(allow_guest=True)
 def reset_password():
-    data = frappe.parse_json(frappe.request.data or "{}")
+    data = _request_payload()
     email = data.get("email"); phone = data.get("phone"); new_password = data.get("new_password")
     if not all([email, phone, new_password]):
         return err("Validation failed","فشل التحقق", {"fields":"email, phone, new_password"}, 417)
